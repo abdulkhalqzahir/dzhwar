@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستەمی بەڕێوەبردنی هۆتێل</title>
+    <style>
+        :root {
+            --primary-color: #f8f9fa;
+            --secondary-color: #343a40;
+            --accent-color: #6d5cae;
+            --text-color: #212529;
+            --light-gray: #e9ecef;
+            --dark-gray: #495057;
+            --white: #ffffff;
+            --black: #000000;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-color);
+            
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--white);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        h1, h2, h3 {
+            color: var(--secondary-color);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #6d5cae, #9c88ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: var(--dark-gray);
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--light-gray);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light-gray);
+            color: var(--accent-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(109, 92, 174, 0.1);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            background-color: #7d6bc0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-delete {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        th {
+            background-color: var(--secondary-color);
+            color: var(--white);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        tr:hover {
+            background-color: rgba(109, 92, 174, 0.05);
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-booked {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+        
+        .badge-standard {
+            background-color: rgba(23, 162, 184, 0.1);
+            color: var(--info-color);
+        }
+        
+        .badge-vip {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--accent-color);
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        
+        .report-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--light-gray);
+        }
+        
+        .report-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+        
+        .report-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>سیستەمی بەڕێوەبردنی هۆتێل</h1>
+            <p class="subtitle">  دژوار خۆشناو  </p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="rooms">ژوورەکان</div>
+            <div class="tab" data-tab="bookings">پشکنینەکان</div>
+            <div class="tab" data-tab="reports">ڕاپۆرتەکان</div>
+        </div>
+        
+        <div class="tab-content active" id="rooms-tab">
+            <div class="card">
+                <h2 class="card-title">تۆمارکردنی ژووری نوێ</h2>
+                <form id="addRoomForm">
+                    <div class="form-group">
+                        <label for="roomNumber">ژمارەی ژوور:</label>
+                        <input type="text" id="roomNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomType">جۆری ژوور:</label>
+                        <select id="roomType" required>
+                            <option value="single">یەک نەفەری</option>
+                            <option value="double">دوو نەفەری</option>
+                            <option value="vip">ڤی ئای پی</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="roomPrice">نرخ (لە یەک شەو):</label>
+                        <input type="number" id="roomPrice" required>
+                    </div>
+                    <button type="submit" class="btn">تۆمارکردنی ژوور</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">ڕاپۆرتی ژوورەکان</h2>
+                <div class="search-container">
+                    <input type="text" id="roomSearchInput" class="search-input" placeholder="گەڕان بە ژمارەی ژوور...">
+                    <button id="roomSearchButton" class="btn btn-secondary">گەڕان</button>
+                </div>
+                <table id="roomsTable">
+                    <thead>
+                        <tr>
+                            <th>ژمارەی ژوور</th>
+                            <th>جۆری ژوور</th>
+                            <th>نرخ</th>
+                            <th>دۆخ</th>
+                            <th>کردارەکان</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Room data will be added by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="bookings-tab">
+            <div class="card">
+                <h2 class="card-title">پشکنینی نوێ</h2>
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label for="customerName">ناوی میوان:</label>
+                        <input type="text" id="customerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookingRoom">ژمارەی ژوور:</label>
+                        <select id="bookingRoom" required>
+                            <!-- Options will be added by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkInDate">ڕێکەوتی چوونە ژوورەوە:</label>
+                        <input type="date" id="checkInDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkOutDate">ڕێکەوتی جێهێشتنی ژوور:</label>
+                        <input type="date" id="checkOutDate" required>
+                    </div>
+                    <button type="submit" class="btn">پشکنینی خواستن</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">گەڕان بۆ پشکنینەکان</h2>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="گەڕان بەناوی میوان یان ژمارەی ژوور...">
+                    <button id="searchButton" class="btn btn-secondary">گەڕان</button>
+                </div>
+                <table id="searchResultsTable">
+                    <thead>
+                        <tr>
+                            <th>ناوی میوان</th>
+                            <th>ژمارەی ژوور</th>
+                            <th>جۆری ژوور</th>
+                            <th>ڕێکەوتی چوونە ژوورەوە</th>
+                            <th>ڕێکەوتی جێهێشتنی ژوور</th>
+                            <th>کۆی نرخ</th>
+                            <th>کردارەکان</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Search results will be added by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="reports-tab">
+            <div class="card">
+                <h2 class="card-title">ڕاپۆرتەکان</h2>
+                
+                <div class="report-cards-container">
+                    <div class="report-card">
+                        <h3 class="report-title">کۆی ژوورەکان</h3>
+                        <div class="report-value" id="totalRooms">0</div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <h3 class="report-title">ژوورە بەردەستەکان</h3>
+                        <div class="report-value" id="availableRooms">0</div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <h3 class="report-title">ژوورە گیراوەکان</h3>
+                        <div class="report-value" id="bookedRooms">0</div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <h3 class="report-title">کۆی پشکنینەکان</h3>
+                        <div class="report-value" id="totalBookings">0</div>
+                    </div>
+                    
+                    <div class="report-card">
+                        <h3 class="report-title">داھاتی گشتی</h3>
+                        <div class="report-value" id="totalRevenue">0 دینار</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px;">پشکنینەکانی ئەمڕۆ</h3>
+                <table id="todaysBookingsTable">
+                    <thead>
+                        <tr>
+                            <th>ناوی میوان</th>
+                            <th>ژمارەی ژوور</th>
+                            <th>جۆری ژوور</th>
+                            <th>کۆی نرخ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Today's bookings will be added by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database for rooms and bookings
+        let rooms = [];
+        let bookings = [];
+        
+        // DOM elements
+        const addRoomForm = document.getElementById('addRoomForm');
+        const bookingForm = document.getElementById('bookingForm');
+        const roomsTable = document.getElementById('roomsTable').getElementsByTagName('tbody')[0];
+        const bookingRoomSelect = document.getElementById('bookingRoom');
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const searchResultsTable = document.getElementById('searchResultsTable').getElementsByTagName('tbody')[0];
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const roomSearchInput = document.getElementById('roomSearchInput');
+        const roomSearchButton = document.getElementById('roomSearchButton');
+        
+        // Report elements
+        const totalRoomsElement = document.getElementById('totalRooms');
+        const availableRoomsElement = document.getElementById('availableRooms');
+        const bookedRoomsElement = document.getElementById('bookedRooms');
+        const totalBookingsElement = document.getElementById('totalBookings');
+        const totalRevenueElement = document.getElementById('totalRevenue');
+        const todaysBookingsTable = document.getElementById('todaysBookingsTable').getElementsByTagName('tbody')[0];
+        
+        // Initialize tabs
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+                
+                if (tab.dataset.tab === 'reports') {
+                    updateReports();
+                }
+            });
+        });
+        
+        // Load data from localStorage
+        function loadData() {
+            const savedRooms = localStorage.getItem('hotelRooms');
+            const savedBookings = localStorage.getItem('hotelBookings');
+            
+            if (savedRooms) {
+                rooms = JSON.parse(savedRooms);
+            }
+            
+            if (savedBookings) {
+                bookings = JSON.parse(savedBookings);
+            }
+            
+            updateRoomsTable();
+            updateBookingRoomSelect();
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('hotelRooms', JSON.stringify(rooms));
+            localStorage.setItem('hotelBookings', JSON.stringify(bookings));
+        }
+        
+        // Add room event
+        addRoomForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const roomNumber = document.getElementById('roomNumber').value;
+            const roomType = document.getElementById('roomType').value;
+            const roomPrice = document.getElementById('roomPrice').value;
+            
+            // Check if room already exists
+            if (rooms.some(room => room.number === roomNumber)) {
+                alert('❗ ژوورێک بەم ژمارەیە هەیە!');
+                return;
+            }
+            
+            // Add new room
+            const newRoom = {
+                number: roomNumber,
+                type: roomType,
+                price: parseFloat(roomPrice),
+                status: 'available'
+            };
+            
+            rooms.push(newRoom);
+            updateRoomsTable();
+            updateBookingRoomSelect();
+            addRoomForm.reset();
+            saveData();
+            
+            // Show success message
+            showNotification('✅ ژوور بەسەرکەوتوویی تۆمارکرا!', 'success');
+        });
+        
+        // Booking event
+        bookingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const customerName = document.getElementById('customerName').value;
+            const roomNumber = document.getElementById('bookingRoom').value;
+            const checkInDate = document.getElementById('checkInDate').value;
+            const checkOutDate = document.getElementById('checkOutDate').value;
+            
+            // Validate dates
+            if (new Date(checkOutDate) <= new Date(checkInDate)) {
+                alert('❗ ڕێکەوتی جێهێشتنی ژوور دەبێت دوای ڕێکەوتی چوونە ژوورەوە بێت!');
+                return;
+            }
+            
+            // Find the room
+            const roomIndex = rooms.findIndex(room => room.number === roomNumber);
+            
+            if (roomIndex === -1) {
+                alert('❗ ژوور نەدۆزرایەوە!');
+                return;
+            }
+            
+            // Check if room is available
+            if (rooms[roomIndex].status !== 'available') {
+                alert('❗ ژوور بەردەست نییە!');
+                return;
+            }
+            
+            // Calculate total price
+            const nights = Math.ceil((new Date(checkOutDate) - new Date(checkInDate)) / (1000 * 60 * 60 * 24));
+            const totalPrice = nights * rooms[roomIndex].price;
+            
+            // Add booking
+            const newBooking = {
+                id: Date.now().toString(),
+                customerName: customerName,
+                roomNumber: roomNumber,
+                roomType: rooms[roomIndex].type,
+                checkInDate: checkInDate,
+                checkOutDate: checkOutDate,
+                totalPrice: totalPrice,
+                bookingDate: new Date().toISOString()
+            };
+            
+            bookings.push(newBooking);
+            
+            // Update room status
+            rooms[roomIndex].status = 'booked';
+            
+            updateRoomsTable();
+            updateBookingRoomSelect();
+            bookingForm.reset();
+            saveData();
+            
+            // Show success message
+            showNotification(`✅ پشکنین بەسەرکەوتوویی تۆمارکرا! کۆی نرخ: ${totalPrice.toLocaleString()} دینار بۆ ${nights} شەو`, 'success');
+        });
+        
+        // Search bookings event
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            const results = bookings.filter(booking => 
+                booking.customerName.toLowerCase().includes(searchTerm) || 
+                booking.roomNumber.toLowerCase().includes(searchTerm))
+                .sort((a, b) => new Date(a.checkInDate) - new Date(b.checkInDate));
+            
+            displaySearchResults(results);
+        });
+        
+        // Search rooms event
+        roomSearchButton.addEventListener('click', function() {
+            const searchTerm = roomSearchInput.value.toLowerCase();
+            
+            if (!searchTerm) {
+                updateRoomsTable();
+                return;
+            }
+            
+            const results = rooms.filter(room => 
+                room.number.toLowerCase().includes(searchTerm))
+                .sort((a, b) => a.number.localeCompare(b.number));
+            
+            displayRooms(results);
+        });
+        
+        // Update rooms table
+        function updateRoomsTable() {
+            displayRooms(rooms);
+        }
+        
+        // Display rooms in table
+        function displayRooms(roomsToDisplay) {
+            roomsTable.innerHTML = '';
+            
+            if (roomsToDisplay.length === 0) {
+                const row = roomsTable.insertRow();
+                const cell = row.insertCell(0);
+                cell.colSpan = 5;
+                cell.textContent = 'هیچ ژوورێک نەدۆزرایەوە';
+                return;
+            }
+            
+            roomsToDisplay.forEach(room => {
+                const row = roomsTable.insertRow();
+                
+                const cellNumber = row.insertCell(0);
+                const cellType = row.insertCell(1);
+                const cellPrice = row.insertCell(2);
+                const cellStatus = row.insertCell(3);
+                const cellActions = row.insertCell(4);
+                
+                cellNumber.textContent = room.number;
+                
+                // Room type with badge
+                const typeBadge = document.createElement('span');
+                typeBadge.className = `badge badge-${room.type === 'vip' ? 'vip' : 'standard'}`;
+                typeBadge.textContent = getRoomTypeName(room.type);
+                cellType.appendChild(typeBadge);
+                
+                cellPrice.textContent = room.price.toLocaleString() + ' دینار';
+                
+                // Status with badge
+                const statusBadge = document.createElement('span');
+                statusBadge.className = `status status-${room.status}`;
+                statusBadge.textContent = room.status === 'available' ? 'بەردەستە' : 'گیراوە';
+                cellStatus.appendChild(statusBadge);
+                
+                // Action buttons
+                const actionButtons = document.createElement('div');
+                actionButtons.className = 'action-buttons';
+                
+                if (room.status === 'booked') {
+                    const checkoutButton = document.createElement('button');
+                    checkoutButton.className = 'btn';
+                    checkoutButton.textContent = 'جێهێشتنی ژوور';
+                    checkoutButton.onclick = function() {
+                        checkOutRoom(room.number);
+                    };
+                    actionButtons.appendChild(checkoutButton);
+                }
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn btn-delete';
+                deleteButton.textContent = 'سڕینەوە';
+                deleteButton.onclick = function() {
+                    deleteRoom(room.number);
+                };
+                actionButtons.appendChild(deleteButton);
+                
+                cellActions.appendChild(actionButtons);
+            });
+        }
+        
+        // Update booking room select
+        function updateBookingRoomSelect() {
+            bookingRoomSelect.innerHTML = '';
+            
+            const availableRooms = rooms.filter(room => room.status === 'available');
+            
+            if (availableRooms.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'هیچ ژوورێک بەردەست نییە';
+                bookingRoomSelect.appendChild(option);
+                bookingRoomSelect.disabled = true;
+            } else {
+                bookingRoomSelect.disabled = false;
+                availableRooms.forEach(room => {
+                    const option = document.createElement('option');
+                    option.value = room.number;
+                    option.textContent = `${room.number} (${getRoomTypeName(room.type)} - ${room.price.toLocaleString()} دینار)`;
+                    bookingRoomSelect.appendChild(option);
+                });
+            }
+        }
+        
+        // Display search results
+        function displaySearchResults(results) {
+            searchResultsTable.innerHTML = '';
+            
+            if (results.length === 0) {
+                const row = searchResultsTable.insertRow();
+                const cell = row.insertCell(0);
+                cell.colSpan = 7;
+                cell.textContent = 'هیچ پشکنینێک نەدۆزرایەوە';
+                return;
+            }
+            
+            results.forEach(booking => {
+                const row = searchResultsTable.insertRow();
+                
+                const cellCustomer = row.insertCell(0);
+                const cellRoom = row.insertCell(1);
+                const cellType = row.insertCell(2);
+                const cellCheckIn = row.insertCell(3);
+                const cellCheckOut = row.insertCell(4);
+                const cellTotal = row.insertCell(5);
+                const cellActions = row.insertCell(6);
+                
+                cellCustomer.textContent = booking.customerName;
+                cellRoom.textContent = booking.roomNumber;
+                
+                // Room type badge
+                const typeBadge = document.createElement('span');
+                typeBadge.className = `badge badge-${booking.roomType === 'vip' ? 'vip' : 'standard'}`;
+                typeBadge.textContent = getRoomTypeName(booking.roomType);
+                cellType.appendChild(typeBadge);
+                
+                cellCheckIn.textContent = formatDate(booking.checkInDate);
+                cellCheckOut.textContent = formatDate(booking.checkOutDate);
+                cellTotal.textContent = booking.totalPrice.toLocaleString() + ' دینار';
+                
+                // Delete booking button
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn btn-delete';
+                deleteButton.textContent = 'سڕینەوە';
+                deleteButton.onclick = function() {
+                    deleteBooking(booking.id);
+                };
+                cellActions.appendChild(deleteButton);
+            });
+        }
+        
+        // Update reports
+        function updateReports() {
+            // Total rooms
+            totalRoomsElement.textContent = rooms.length;
+            
+            // Available rooms
+            const availableRoomsCount = rooms.filter(room => room.status === 'available').length;
+            availableRoomsElement.textContent = availableRoomsCount;
+            
+            // Booked rooms
+            const bookedRoomsCount = rooms.filter(room => room.status === 'booked').length;
+            bookedRoomsElement.textContent = bookedRoomsCount;
+            
+            // Total bookings
+            totalBookingsElement.textContent = bookings.length;
+            
+            // Total revenue
+            const totalRevenue = bookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
+            totalRevenueElement.textContent = totalRevenue.toLocaleString() + ' دینار';
+            
+            // Today's bookings
+            const today = new Date().toISOString().split('T')[0];
+            const todaysBookings = bookings.filter(booking => booking.checkInDate === today);
+            
+            todaysBookingsTable.innerHTML = '';
+            
+            if (todaysBookings.length === 0) {
+                const row = todaysBookingsTable.insertRow();
+                const cell = row.insertCell(0);
+                cell.colSpan = 4;
+                cell.textContent = 'هیچ پشکنینێک بۆ ئەمڕۆ نییە';
+                return;
+            }
+            
+            todaysBookings.forEach(booking => {
+                const row = todaysBookingsTable.insertRow();
+                
+                const cellCustomer = row.insertCell(0);
+                const cellRoom = row.insertCell(1);
+                const cellType = row.insertCell(2);
+                const cellTotal = row.insertCell(3);
+                
+                cellCustomer.textContent = booking.customerName;
+                cellRoom.textContent = booking.roomNumber;
+                
+                // Room type badge
+                const typeBadge = document.createElement('span');
+                typeBadge.className = `badge badge-${booking.roomType === 'vip' ? 'vip' : 'standard'}`;
+                typeBadge.textContent = getRoomTypeName(booking.roomType);
+                cellType.appendChild(typeBadge);
+                
+                cellTotal.textContent = booking.totalPrice.toLocaleString() + ' دینار';
+            });
+        }
+        
+        // Check out room
+        function checkOutRoom(roomNumber) {
+            const roomIndex = rooms.findIndex(room => room.number === roomNumber);
+            
+            if (roomIndex !== -1) {
+                rooms[roomIndex].status = 'available';
+                updateRoomsTable();
+                updateBookingRoomSelect();
+                saveData();
+                showNotification('✅ ژوور بەسەرکەوتوویی خاوەنەوەکرایەوە', 'success');
+            }
+        }
+        
+        // Delete room
+        function deleteRoom(roomNumber) {
+            if (confirm('ئایا دڵنیای لە سڕینەوەی ئەم ژوورە؟')) {
+                const roomIndex = rooms.findIndex(room => room.number === roomNumber);
+                
+                if (roomIndex !== -1) {
+                    // Check if room is booked
+                    if (rooms[roomIndex].status === 'booked') {
+                        alert('❗ ناتوانیت ژوورێکی گیراو بسڕیتەوە!');
+                        return;
+                    }
+                    
+                    rooms.splice(roomIndex, 1);
+                    updateRoomsTable();
+                    updateBookingRoomSelect();
+                    saveData();
+                    showNotification('✅ ژوور بەسەرکەوتوویی سڕایەوە', 'success');
+                }
+            }
+        }
+        
+        // Delete booking
+        function deleteBooking(bookingId) {
+            if (confirm('ئایا دڵنیای لە سڕینەوەی ئەم پشکنینە؟')) {
+                const bookingIndex = bookings.findIndex(booking => booking.id === bookingId);
+                
+                if (bookingIndex !== -1) {
+                    const booking = bookings[bookingIndex];
+                    
+                    // Update room status to available
+                    const roomIndex = rooms.findIndex(room => room.number === booking.roomNumber);
+                    if (roomIndex !== -1) {
+                        rooms[roomIndex].status = 'available';
+                    }
+                    
+                    bookings.splice(bookingIndex, 1);
+                    updateRoomsTable();
+                    updateBookingRoomSelect();
+                    displaySearchResults(bookings);
+                    saveData();
+                    showNotification('✅ پشکنین بەسەرکەوتوویی سڕایەوە', 'success');
+                }
+            }
+        }
+        
+        // Get room type name
+        function getRoomTypeName(type) {
+            switch(type) {
+                case 'single': return 'یەک نەفەری';
+                case 'double': return 'دوو نەفەری';
+                case 'vip': return 'ڤی ئای پی';
+                default: return type;
+            }
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('ar-EG', options);
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 20px';
+            notification.style.backgroundColor = type === 'success' ? 'rgba(40, 167, 69, 0.9)' : 'rgba(220, 53, 69, 0.9)';
+            notification.style.color = 'white';
+            notification.style.borderRadius = '4px';
+            notification.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+            notification.style.zIndex = '1000';
+            notification.style.animation = 'slideIn 0.3s forwards';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s forwards';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Initialize the app
+        function initializeApp() {
+            loadData();
+            
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Start the app
+        initializeApp();
+    </script>
+</body>
+</html>
